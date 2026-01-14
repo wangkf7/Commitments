@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>你的专属乐园</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #fff7ed;
+            margin: 0;
+            padding: 15px;
+            padding-bottom: 80px;
+        }
+        h1 { color: #c2410c; text-align: center; font-size: 22px; margin: 15px 0; }
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            text-align: center;
+        }
+        
+        /* 3D秋千动画 */
+        .swing-container {
+            height: 380px;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            margin-bottom: 15px;
+            perspective: 800px;
+            overflow: hidden;
+        }
+        .swing-frame {
+            position: absolute;
+            top: 0;
+            width: 200px;
+            height: 360px;
+            transform-style: preserve-3d;
+        }
+        /* 秋千架顶部横梁 */
+        .swing-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 200px;
+            height: 12px;
+            background: linear-gradient(to bottom, #8b5cf6, #7c3aed);
+            border-radius: 6px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            z-index: 10;
+        }
+        /* 秋千整体 */
+        .swing-body {
+            position: absolute;
+            top: 6px;
+            left: 50%;
+            transform-origin: top center;
+            transform-style: preserve-3d;
+            animation: swing3D 3s infinite ease-in-out;
+        }
+        /* 绳子固定点 */
+        .rope-top {
+            position: absolute;
+            top: 0;
+            width: 8px;
+            height: 8px;
+            background: #6d28d9;
+            border-radius: 50%;
+            z-index: 11;
+        }
+        .rope-top.left { left: -54px; }
+        .rope-top.right { left: 42px; }
+        .swing-rope {
+            width: 4px;
+            height: 160px;
+            background: linear-gradient(to bottom, #c4b5fd, #a78bfa);
+            position: absolute;
+            top: 4px;
+            border-radius: 2px;
+        }
+        .swing-rope.left { left: -52px; }
+        .swing-rope.right { left: 44px; }
+        .swing-seat {
+            width: 105px;
+            height: 12px;
+            background: linear-gradient(to bottom, #7c3aed, #6d28d9);
+            border-radius: 6px;
+            position: absolute;
+            top: 160px;
+            left: -52px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        
+        /* SVG女孩容器 */
+        .girl-svg {
+            position: absolute;
+            top: 55px;
+            left: -60px;
+            width: 120px;
+            height: 150px;
+            animation: girlSwing 3s infinite ease-in-out;
+        }
+        
+        /* 3D前后摆动 */
+        @keyframes swing3D {
+            0%, 100% { 
+                transform: translateX(-50%) rotateX(-25deg) translateZ(25px);
+            }
+            50% { 
+                transform: translateX(-50%) rotateX(25deg) translateZ(-25px);
+            }
+        }
+        @keyframes girlSwing {
+            0%, 100% { transform: rotate(-3deg); }
+            50% { transform: rotate(3deg); }
+        }
+        /* 地面阴影 */
+        .swing-shadow {
+            position: absolute;
+            bottom: 5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 20px;
+            background: radial-gradient(ellipse, rgba(0,0,0,0.12) 0%, transparent 70%);
+            animation: shadowMove 3s infinite ease-in-out;
+        }
+        @keyframes shadowMove {
+            0%, 100% { width: 60px; opacity: 0.5; }
+            50% { width: 100px; opacity: 0.2; }
+        }
+
+        /* 食物网格 */
+        .food-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        .food-item {
+            background: #ffedd5;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        .carousel {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 4/3;
+            overflow: hidden;
+            background: #f5f5f5;
+        }
+        .carousel img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            position: absolute;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            background: #fff;
+        }
+        .carousel img.active { opacity: 1; }
+        /* 左右切换按钮 */
+        .carousel-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 28px;
+            height: 28px;
+            background: rgba(255,255,255,0.85);
+            border: none;
+            border-radius: 50%;
+            font-size: 14px;
+            color: #ea580c;
+            cursor: pointer;
+            z-index: 5;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .carousel-btn:active {
+            background: #fff;
+            transform: translateY(-50%) scale(0.95);
+        }
+        .carousel-btn.prev { left: 5px; }
+        .carousel-btn.next { right: 5px; }
+        .dots {
+            display: flex;
+            justify-content: center;
+            gap: 4px;
+            padding: 6px 0;
+        }
+        .dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #ddd;
+            cursor: pointer;
+        }
+        .dot.active { background: #ea580c; }
+        .food-name {
+            padding: 8px;
+            font-size: 13px;
+            color: #9a3412;
+            font-weight: bold;
+        }
+
+        .footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            padding: 12px;
+            text-align: center;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+        }
+        .footer a {
+            color: #ea580c;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        .footer-note {
+            color: #999;
+            font-size: 11px;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<h1>✨ 欢迎来到你的专属乐园 ✨</h1>
+
+<!-- 秋千区域 -->
+<div class="section">
+    <h3 style="color: #6d28d9; margin-top: 0;">🎠 公园里的VIP专座</h3>
+    <div class="swing-container">
+        <div class="swing-frame">
+            <div class="swing-bar"></div>
+            <div class="swing-body">
+                <div class="rope-top left"></div>
+                <div class="rope-top right"></div>
+                <div class="swing-rope left"></div>
+                <div class="swing-rope right"></div>
+                <div class="swing-seat"></div>
+                <!-- SVG可爱女孩 -->
+                <svg class="girl-svg" viewBox="0 0 120 150">
+                    <defs>
+                        <linearGradient id="skinGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" style="stop-color:#ffe8d6"/>
+                            <stop offset="100%" style="stop-color:#ffd4b8"/>
+                        </linearGradient>
+                        <linearGradient id="hairGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" style="stop-color:#4a3728"/>
+                            <stop offset="100%" style="stop-color:#2d1810"/>
+                        </linearGradient>
+                        <linearGradient id="dressGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" style="stop-color:#f472b6"/>
+                            <stop offset="100%" style="stop-color:#ec4899"/>
+                        </linearGradient>
+                    </defs>
+                    
+                    <!-- 后面的头发 -->
+                    <ellipse cx="60" cy="42" rx="32" ry="28" fill="url(#hairGrad)"/>
+                    <!-- 左边长发 -->
+                    <path d="M32 45 Q28 80 35 110 Q40 115 42 105 Q38 75 40 50 Z" fill="url(#hairGrad)">
+                        <animate attributeName="d" dur="3s" repeatCount="indefinite"
+                            values="M32 45 Q28 80 35 110 Q40 115 42 105 Q38 75 40 50 Z;
+                                    M32 45 Q25 80 32 110 Q37 115 40 105 Q35 75 40 50 Z;
+                                    M32 45 Q28 80 35 110 Q40 115 42 105 Q38 75 40 50 Z"/>
+                    </path>
+                    <!-- 右边长发 -->
+                    <path d="M88 45 Q92 80 85 110 Q80 115 78 105 Q82 75 80 50 Z" fill="url(#hairGrad)">
+                        <animate attributeName="d" dur="3s" repeatCount="indefinite"
+                            values="M88 45 Q92 80 85 110 Q80 115 78 105 Q82 75 80 50 Z;
+                                    M88 45 Q95 80 88 110 Q83 115 80 105 Q85 75 80 50 Z;
+                                    M88 45 Q92 80 85 110 Q80 115 78 105 Q82 75 80 50 Z"/>
+                    </path>
+                    
+                    <!-- 脸 -->
+                    <ellipse cx="60" cy="45" rx="26" ry="28" fill="url(#skinGrad)"/>
+                    
+                    <!-- 刘海 -->
+                    <path d="M35 35 Q40 20 60 18 Q80 20 85 35 Q80 42 60 40 Q40 42 35 35" fill="url(#hairGrad)"/>
+                    
+                    <!-- 眼睛 - 闭眼微笑 -->
+                    <path d="M45 45 Q50 40 55 45" stroke="#3d2817" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+                    <path d="M65 45 Q70 40 75 45" stroke="#3d2817" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+                    
+                    <!-- 腮红 -->
+                    <ellipse cx="40" cy="52" rx="6" ry="3" fill="#ffb3b3" opacity="0.6"/>
+                    <ellipse cx="80" cy="52" rx="6" ry="3" fill="#ffb3b3" opacity="0.6"/>
+                    
+                    <!-- 嘴巴 - 开心微笑 -->
+                    <path d="M54 58 Q60 65 66 58" stroke="#e57373" stroke-width="2" fill="none" stroke-linecap="round"/>
+                    
+                    <!-- 头上的花 -->
+                    <text x="78" y="25" font-size="18">🌸</text>
+                    
+                    <!-- 身体/裙子 -->
+                    <path d="M45 72 L42 105 Q60 115 78 105 L75 72 Q60 78 45 72" fill="url(#dressGrad)"/>
+                    
+                    <!-- 手臂 -->
+                    <path d="M42 75 Q30 85 28 100" stroke="url(#skinGrad)" stroke-width="10" fill="none" stroke-linecap="round"/>
+                    <path d="M78 75 Q90 85 92 100" stroke="url(#skinGrad)" stroke-width="10" fill="none" stroke-linecap="round"/>
+                    
+                    <!-- 腿 -->
+                    <path d="M50 105 L48 135" stroke="url(#skinGrad)" stroke-width="10" fill="none" stroke-linecap="round"/>
+                    <path d="M70 105 L72 135" stroke="url(#skinGrad)" stroke-width="10" fill="none" stroke-linecap="round"/>
+                    
+                    <!-- 鞋子 -->
+                    <ellipse cx="48" cy="138" rx="7" ry="4" fill="#ec4899"/>
+                    <ellipse cx="72" cy="138" rx="7" ry="4" fill="#ec4899"/>
+                </svg>
+            </div>
+        </div>
+        <div class="swing-shadow"></div>
+    </div>
+    <p style="margin-bottom: 0;">这里没有小朋友和你抢，<br>你想荡多久就荡多久！</p>
+</div>
+
+<!-- 肉松美食区域 -->
+<div class="section">
+    <h3 style="color: #ea580c; margin-top: 0;">🍞 无限量肉松补给站</h3>
+    <p>都是你爱吃的：</p>
+    <div class="food-grid" id="foodGrid"></div>
+</div>
+
+<div class="footer">
+    <a href="index.html">← 返回首页</a>
+    <div class="footer-note">Created for my best friend ❤️</div>
+</div>
+
+<script>
+const foods = [
+    { name: '肉松满满面包', images: ['Images/肉松面包 (1).jpg','Images/肉松面包 (2).jpg','Images/肉松面包 (3).jpg','Images/肉松面包 (4).jpg'] },
+    { name: '爆浆肉松小贝', images: ['Images/肉松小贝 (1).jpg','Images/肉松小贝 (2).jpg','Images/肉松小贝 (3).jpg','Images/肉松小贝 (4).jpg','Images/肉松小贝 (5).jpg','Images/肉松小贝 (6).jpg'] },
+    { name: '脆皮肉松卷', images: ['Images/肉松卷 (1).jpg','Images/肉松卷 (2).jpg','Images/肉松卷 (3).jpg','Images/肉松卷 (4).jpg','Images/肉松卷 (5).jpg','Images/肉松卷 (6).jpg'] },
+    { name: '咸蛋黄肉松饭团', images: ['Images/肉松饭团 (1).jpg','Images/肉松饭团 (2).jpg','Images/肉松饭团 (3).jpg','Images/肉松饭团 (4).jpg','Images/肉松饭团 (5).jpg'] }
+];
+
+const grid = document.getElementById('foodGrid');
+
+foods.forEach((food, idx) => {
+    const item = document.createElement('div');
+    item.className = 'food-item';
+    
+    let imgsHtml = food.images.map((src, i) => 
+        `<img src="${src}" alt="${food.name}" class="${i===0?'active':''}" onerror="this.style.display='none'">`
+    ).join('');
+    
+    let dotsHtml = food.images.map((_, i) => 
+        `<span class="dot ${i===0?'active':''}" data-idx="${i}"></span>`
+    ).join('');
+    
+    item.innerHTML = `
+        <div class="carousel" data-food="${idx}">
+            ${imgsHtml}
+            <button class="carousel-btn prev" data-food="${idx}">❮</button>
+            <button class="carousel-btn next" data-food="${idx}">❯</button>
+        </div>
+        <div class="dots" data-food="${idx}">${dotsHtml}</div>
+        <div class="food-name">${food.name}</div>
+    `;
+    grid.appendChild(item);
+});
+
+// 自动轮播
+foods.forEach((food, foodIdx) => {
+    let current = 0;
+    setInterval(() => {
+        current = (current + 1) % food.images.length;
+        updateCarousel(foodIdx, current);
+    }, 2500 + foodIdx * 300);
+});
+
+// 点击切换
+document.querySelectorAll('.dots').forEach(dots => {
+    dots.addEventListener('click', e => {
+        if (e.target.classList.contains('dot')) {
+            const foodIdx = parseInt(dots.dataset.food);
+            const imgIdx = parseInt(e.target.dataset.idx);
+            updateCarousel(foodIdx, imgIdx);
+        }
+    });
+});
+
+// 左右按钮切换
+document.querySelectorAll('.carousel-btn').forEach(btn => {
+    btn.addEventListener('click', e => {
+        const foodIdx = parseInt(btn.dataset.food);
+        const carousel = document.querySelector(`.carousel[data-food="${foodIdx}"]`);
+        const imgs = carousel.querySelectorAll('img');
+        let current = Array.from(imgs).findIndex(img => img.classList.contains('active'));
+        
+        if (btn.classList.contains('prev')) {
+            current = (current - 1 + imgs.length) % imgs.length;
+        } else {
+            current = (current + 1) % imgs.length;
+        }
+        updateCarousel(foodIdx, current);
+    });
+});
+
+function updateCarousel(foodIdx, imgIdx) {
+    const carousel = document.querySelector(`.carousel[data-food="${foodIdx}"]`);
+    const dots = document.querySelector(`.dots[data-food="${foodIdx}"]`);
+    carousel.querySelectorAll('img').forEach((img, i) => img.classList.toggle('active', i === imgIdx));
+    dots.querySelectorAll('.dot').forEach((dot, i) => dot.classList.toggle('active', i === imgIdx));
+}
+</script>
+
+</body>
+</html>

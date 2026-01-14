@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>专属空间</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #fdf2f8; /* 淡粉色背景 */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            text-align: center;
+        }
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            width: 80%;
+            max-width: 400px;
+        }
+        h2 { color: #db2777; }
+        input {
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            width: 80%;
+            margin-top: 15px;
+            font-size: 16px;
+            text-align: center;
+        }
+        button {
+            margin-top: 20px;
+            padding: 10px 30px;
+            background-color: #db2777;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .hint {
+            font-size: 12px;
+            color: #888;
+            margin-top: 10px;
+        }
+        .error-msg {
+            color: #e11d48;
+            font-size: 14px;
+            margin-top: 10px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .error-msg.show {
+            opacity: 1;
+            animation: shake 0.5s ease;
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h2>登录页面</h2>
+    <p>请输入我们相遇的神秘代码</p>
+    
+    <input type="text" id="passwordInput" placeholder="YYYYMMDD" maxlength="8" inputmode="numeric" pattern="[0-9]*">
+    <!-- 提示语：用户容易理解的提示 -->
+    <p class="hint">💡 还记得我们是哪天认识的吗？</p>
+    <p class="error-msg" id="errorMsg"></p>
+    
+    <button onclick="checkLogin()">进入</button>
+</div>
+
+<script>
+    function checkLogin() {
+        const input = document.getElementById('passwordInput').value;
+        const errorMsg = document.getElementById('errorMsg');
+        // 这里设置密码，按照你的要求是 20250723
+        if (input === '20250723') {
+            window.location.href = 'question.html';
+        } else {
+            errorMsg.textContent = '密码不对哦，再想想我们是什么时候认识的？';
+            errorMsg.classList.add('show');
+            setTimeout(() => errorMsg.classList.remove('show'), 3000);
+        }
+    }
+</script>
+
+</body>
+</html>

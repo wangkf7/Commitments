@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>默契考验</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #fff1f2;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            text-align: center;
+        }
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            width: 80%;
+            max-width: 400px;
+        }
+        h2 { color: #e11d48; }
+        input {
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            width: 60%;
+            margin-top: 15px;
+            font-size: 18px;
+            text-align: center;
+        }
+        button {
+            margin-top: 20px;
+            padding: 10px 30px;
+            background-color: #e11d48;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .error-msg {
+            color: #e11d48;
+            font-size: 14px;
+            margin-top: 10px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .error-msg.show { opacity: 1; }
+        .back-link {
+            display: block;
+            margin-top: 20px;
+            color: #888;
+            font-size: 12px;
+            text-decoration: none;
+        }
+        .back-link:hover { color: #e11d48; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h2>💕 终极考验</h2>
+    <p>今天是我们成为朋友后的第几天？</p>
+    <input type="number" id="dayInput" placeholder="输入天数" inputmode="numeric">
+    <p class="error-msg" id="errorMsg"></p>
+    <button onclick="checkDays()">确认</button>
+    <a href="index.html" class="back-link">← 返回</a>
+</div>
+
+<script>
+    const startDate = new Date(2025, 6, 23);
+    const now = new Date();
+    const diffDays = Math.ceil(Math.abs(now - startDate) / (1000 * 60 * 60 * 24));
+
+    function checkDays() {
+        const input = parseInt(document.getElementById('dayInput').value);
+        const errorMsg = document.getElementById('errorMsg');
+        if (input === diffDays || input === diffDays - 1 || input === diffDays + 1) {
+            window.location.href = 'gift.html';
+        } else {
+            errorMsg.textContent = '不对哦！是 ' + diffDays + ' 天左右吧～';
+            errorMsg.classList.add('show');
+            setTimeout(() => errorMsg.classList.remove('show'), 3000);
+        }
+    }
+</script>
+
+</body>
+</html>
