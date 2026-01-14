@@ -350,7 +350,7 @@ foods.forEach((food, idx) => {
     item.className = 'food-item';
     
     let imgsHtml = food.images.map((src, i) => 
-        `<img src="${src}" alt="${food.name}" class="${i===0?'active':''}" onerror="this.style.display='none'">`
+        `<img src="${src}" alt="${food.name}" class="${i===0?'active':''}" loading="lazy" onerror="this.style.display='none'">`
     ).join('');
     
     let dotsHtml = food.images.map((_, i) => 
